@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "target": "es5",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "experimentalDecorators": true,
+        "strictNullChecks": true
+    },
+    "files": [
+        "./node_modules/@types/react/index.d.ts",
+        "./node_modules/@types/react-dom/index.d.ts",
+        "./node_modules/@types/node/index.d.ts"
+    ],
+    "include": [
+        "app/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}
