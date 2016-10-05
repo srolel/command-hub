@@ -1,4 +1,4 @@
-export const sideMenuWidth: string;
+export const commandListHeight: string;
 export const main: string;
 export const commandsListWrapper: string;
 export const consoleWrapper: string;
@@ -10,4 +10,6 @@ export const addCommand: string;
 export const commandsList: string;
 export const commandWrapper: string;
 export const activeCommand: string;
+export const commandWithErrors: string;
+export const commandExec: string;
 export const console: string;

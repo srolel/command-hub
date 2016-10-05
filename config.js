@@ -63,7 +63,7 @@ System.config({
         typescript: {
             meta: {
                 'lib/*': {
-                    format: 'cjs'
+                    // format: 'cjs'
                 }
             }
         },

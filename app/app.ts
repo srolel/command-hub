@@ -1,5 +1,11 @@
 import * as ReactDOM from 'react-dom';
-import component from './components/component';
+import component, {store} from './components/component';
+
+export {store as store};
+
+export const __reload = (prevModule) => {
+    store.copyStateFrom(prevModule.store);
+}
 
 const appEl = document.getElementById('app');
 

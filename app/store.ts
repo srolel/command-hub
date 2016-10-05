@@ -1,5 +1,5 @@
 import { spawn, ChildProcess } from 'child_process';
-import {toJS, observable, computed, action, autorun } from 'mobx';
+import { toJS, observable, computed, action, autorun } from 'mobx';
 
 export enum CommandStreamType { Log, Error, Warning };
 
@@ -44,6 +44,14 @@ export class Command implements EditableCommandFields {
             cmd: `cd ${this.cwd} && ${this.computedCmd}`,
             args: this.computedArgs
         };
+    }
+
+    @computed get errors() {
+        return this.stream.filter(s => s.type === CommandStreamType.Error);
+    }
+
+    @computed get hasErrors() {
+        return this.errors.length > 0;
     }
 
     spawned: ChildProcess;
@@ -95,6 +103,11 @@ class Store {
 
     idCounter = 0;
 
+    constructor(store?: Store) {
+        if (store)
+            this.copyStateFrom(store)
+    }
+
     @observable mode = CommandsListMode.Edit;
 
     @observable active: Command;
@@ -114,7 +127,9 @@ class Store {
     /*
     * for hot reload
     */
+    @action
     copyStateFrom(store: Store) {
+        console.log(store.commands);
         this.mode = store.mode;
         this.active = store.active;
         this.commands = store.commands;

@@ -3,11 +3,9 @@ import { observer } from 'mobx-react';
 import Store, { Command, CommandsListMode } from '../store';
 import * as styles from './style.css';
 
+const global = window as any;
 export const store = new Store();
 
-export const __reload = (deletedModule: { store: Store }) => {
-    store.copyStateFrom(deletedModule.store);
-};
 
 const command = store.addCommand();
 command.cwd = 'C:/repos/active-allocator/client';
@@ -25,24 +23,9 @@ class Component extends React.Component<Props, any> {
         console: Element;
     }
 
-    renderCommandEdit = (command: Command) => {
-        return <div className={styles.command}>
-            <label className={styles.cwd}>
-                Cwd:
-                <input
-                    value={command.cwd}
-                    onChange={e =>
-                        command.edit({ cwd: e.target.value })} />
-            </label>
-            <label className={styles.cmd}>
-                Cmd:
-                <input
-                    value={command.cmd}
-                    onChange={e =>
-                        command.edit({ cmd: e.target.value })} />
-            </label>
-            {this.renderCommandExecuteButton(command)}
-        </div>;
+    onEditSubmit: React.FormEventHandler = e => {
+        e.preventDefault();
+        this.setDisplayMode();
     };
 
     executeCommand(command: Command) {
@@ -55,25 +38,36 @@ class Component extends React.Component<Props, any> {
         return <button onClick={() => this.executeCommand(command)}>Run</button>;
     }
 
-    renderCommandExecute = (command: Command) => {
-        const {styles} = this.props;
-        return <div className={styles.commandExec}>
-            <div>
-                <div>Cwd:</div><pre title={command.cwd}>{command.cwd}</pre>
-                <div>Cmd:</div><pre title={command.cmd}>{command.cmd}</pre>
-            </div>
-            {this.renderCommandExecuteButton(command)}
-        </div>;
+
+    renderCommandField = (value: string, onChange: (value: string) => any) => {
+        const {store} = this.props;
+        if (command === store.active && store.mode === CommandsListMode.Edit) {
+            return <input
+                value={value}
+                onChange={e =>
+                    command.edit({ cwd: e.target.value })} />;
+        } else {
+            return <pre
+                onClick={this.setEditMode}
+                title={value}>{value}</pre>
+        }
     }
 
     renderCommand = (command: Command) => {
-        const {store} = this.props;
-        if (store.mode === CommandsListMode.Edit) {
-            return this.renderCommandEdit(command);
-        } else {
-            return this.renderCommandExecute(command);
-        }
-    }
+        return <div className={styles.command}>
+            <form onSubmit={this.onEditSubmit}>
+                <label className={styles.cwd}>
+                    Cwd:
+                    {this.renderCommandField(command.cwd, cwd => command.edit({ cwd }))}
+                </label>
+                <label className={styles.cmd}>
+                    Cmd:
+                    {this.renderCommandField(command.cmd, cmd => command.edit({ cmd }))}
+                </label>
+                {this.renderCommandExecuteButton(command)}
+            </form>
+        </div>;
+    };
 
     renderCommandsList() {
         const {store, styles} = this.props;
@@ -85,6 +79,7 @@ class Component extends React.Component<Props, any> {
                     className={`
                         ${styles.commandWrapper}
                         ${store.active === command ? styles.activeCommand : ''}
+                        ${command.hasErrors ? styles.commandWithErrors : ''}
                     `}>
                     {this.renderCommand(command)}
                 </div>
@@ -111,14 +106,17 @@ class Component extends React.Component<Props, any> {
         </div>;
     }
 
+    setEditMode = () => store.setMode(CommandsListMode.Edit);
+    setDisplayMode = () => store.setMode(CommandsListMode.Buttons);
+
     renderModeButton() {
         const {store} = this.props;
         let text: string, action: () => void;
         if (store.mode === CommandsListMode.Edit) {
-            action = () => store.setMode(CommandsListMode.Buttons);
+            action = this.setDisplayMode;
             text = 'Finished Editing';
         } else {
-            action = () => store.setMode(CommandsListMode.Edit);
+            action = this.setDisplayMode;
             text = 'Edit Commands';
         }
         return <button

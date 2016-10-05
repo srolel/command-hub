@@ -1,25 +1,31 @@
 .main {}
 
-@value sideMenuWidth: 200px;
-
+@value commandListHeight: 60vh;
 .commandsListWrapper {
-    position: fixed;
+    width: 100vw;
+    height: commandListHeight;
+    overflow-y: scroll;
+    /*position: fixed;
     top: 0;
     bottom: 0;
     width: sideMenuWidth;
     margin-left: calc(-1 * sideMenuWidth);
     left: sideMenuWidth;
     z-index: 9999;
-    overflow-y: auto;
+    overflow-y: auto;*/
 }
 
 .consoleWrapper {
+    width: 100vw;
     overflow-y: scroll;
+    height: calc(100vh - commandListHeight);
+    font-size: 0.75em;
+    /*overflow-y: scroll;
     font-size: 0.75em;
     position: relative;
     left: sideMenuWidth;
     height: 100vh;
-    width: calc(100% - sideMenuWidth);
+    width: calc(100% - sideMenuWidth);*/
 }
 
 .command {}
@@ -29,6 +35,9 @@
     margin: 10px 0;
     input {
         width: 100%;
+        margin: 0;
+    }
+    pre {
         margin: 0;
     }
 }
@@ -47,6 +56,8 @@
 
 .commandWrapper {
     padding: 5px;
+    display: inline-block;
+    width: calc(100% / 3);
     &:hover {
         background: #ccc;
     }
@@ -55,6 +66,14 @@
 .activeCommand {
     border-left: 7px solid green;
 }
+
+.commandWithErrors {
+    &.commandWithErrors {
+        background: #c99;
+    }
+}
+
+.commandExec {}
 
 .console {
     word-break: break-all;
