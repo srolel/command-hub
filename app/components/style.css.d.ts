@@ -13,3 +13,4 @@ export const activeCommand: string;
 export const commandWithErrors: string;
 export const commandExec: string;
 export const console: string;
+export const editCommands: string;

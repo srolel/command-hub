@@ -10,6 +10,7 @@ interface CommandStream {
 
 interface EditableCommandFields {
     id?: number;
+    name?: string;
     cwd?: string;
     cmd?: string;
     args?: string[];
@@ -17,11 +18,16 @@ interface EditableCommandFields {
 
 export class Command implements EditableCommandFields {
 
-    constructor(id: number) {
-        this.id = id;
+    constructor(args: EditableCommandFields) {
+        if (args.id) this.id = args.id;
+        if (args.name) this.name = args.name;
+        if (args.cwd) this.cwd = args.cwd;
+        if (args.cmd) this.cmd = args.cmd;
+        if (args.args) this.args = args.args;
     }
 
     @observable id: number;
+    @observable name: string = 'New Command';
     @observable cwd: string = '';
     @observable cmd: string = '';
     @observable args: string[] = [];
@@ -57,6 +63,10 @@ export class Command implements EditableCommandFields {
     spawned: ChildProcess;
 
     @action edit(edited: EditableCommandFields) {
+
+        if (edited.name)
+            this.name = edited.name;
+
         if (edited.cwd)
             this.cwd = edited.cwd;
 
@@ -122,6 +132,7 @@ class Store {
     };
     @action setMode = (mode: CommandsListMode) => {
         this.mode = mode;
+        console.log(this.mode);
     }
 
     /*

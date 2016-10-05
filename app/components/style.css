@@ -30,6 +30,12 @@
 
 .command {}
 
+.commandEditForm {
+    button {
+        display: none;
+    }
+}
+
 .commandField {
     display: block;
     margin: 10px 0;
@@ -40,6 +46,10 @@
     pre {
         margin: 0;
     }
+}
+
+.name {
+    composes: commandField;
 }
 
 .cwd {
