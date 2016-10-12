@@ -5,10 +5,12 @@ const System = require('systemjs');
 System.trace = true;
 require('./config.js');
 
-const HotReloader = require('./lib/hot-reloader');
+const HotReloader = require('./lib/hot-reloader').HotReloaderFactory({
+  getEmitter: () => getChangeEmitter({})
+});
 const getChangeEmitter = require('./lib/file-change-emitter');
 
-new HotReloader(getChangeEmitter({}));
+new HotReloader();
 System.import('app');
 
 
