@@ -34,10 +34,21 @@ class Component extends React.Component<Props, any> {
         command.execute();
     }
 
+    killCommand(command: Command) {
+        command.kill();
+        this.clearConsole(command);
+    }
+
+    clearConsole(command: Command) {
+        command.clearStream();
+    }
+
     renderCommandControls(command: Command) {
         const {store} = this.props;
         return <div>
             <button onClick={() => this.executeCommand(command)}>Run</button>
+            <button onClick={() => this.killCommand(command)}>Kill</button>
+            <button onClick={() => this.clearConsole(command)}>Clear</button>
             {this.renderModeButton()}
         </div>;
     }
@@ -47,7 +58,7 @@ class Component extends React.Component<Props, any> {
         if (store.mode === CommandsListMode.Edit) {
             return <input
                 value={value}
-                onChange={e => onChange(e.target.value)} />;
+                onChange={e => onChange((e.target as HTMLInputElement).value)} />;
         } else {
             return <pre
                 onClick={this.setEditMode}
@@ -57,7 +68,7 @@ class Component extends React.Component<Props, any> {
 
     renderActiveCommandMenu = (command?: Command) => {
         if (!command) return null;
-        return <div className={styles.command}>
+        return <div className={`${styles.command}`}>
             <form className={styles.commandEditForm} onSubmit={this.onEditSubmit}>
                 <label className={styles.name}>
                     Name:
@@ -79,23 +90,37 @@ class Component extends React.Component<Props, any> {
 
     renderCommandListItem = (command: Command) => {
         const {store, styles} = this.props;
-        return <div className={styles.command}>
+        return <div className={`${styles.commandListItem}`}>
             <button onClick={() => store.setActiveCommand(command)}>{command.name}</button>
         </div>;
     };
 
+    getClassForCommand(command: Command) {
+        const {store, styles} = this.props;
+        let classNames: string[] = [];
+        if (store.active === command) {
+            classNames.push(styles.activeCommand);
+        }
+        if (command.isRunning) {
+            console.log('wat')
+            classNames.push(styles.runningCommand);
+        }
+
+        if (command.hasErrors) {
+            classNames.push(styles.commandWithErrors);
+        }
+
+        return classNames.join(' ');
+    }
+
     renderCommandsList() {
         const {store, styles} = this.props;
         return <div className={styles.commandsList}>
-            {store.commands.map(command =>
+            {store.commands.map((command, i) =>
                 <div
-                    key={command.id}
+                    key={command.id || i}
                     onClick={() => store.setActiveCommand(command)}
-                    className={`
-                        ${styles.commandWrapper}
-                        ${store.active === command ? styles.activeCommand : ''}
-                        ${command.hasErrors ? styles.commandWithErrors : ''}
-                    `}>
+                    className={`${styles.commandWrapper} ${this.getClassForCommand(command)}`}>
                     {this.renderCommandListItem(command)}
                 </div>
             )}
@@ -141,6 +166,19 @@ class Component extends React.Component<Props, any> {
         </button>
     }
 
+    renderActiveCommand() {
+        const {active} = this.props.store;
+        if (!active) return null;
+        return <div className={styles.activeCommandContainer}>
+            <div className={`${styles.activeCommandMenu} ${this.getClassForCommand(command)}`}>
+                {this.renderActiveCommandMenu(active)}
+            </div>
+            <div className={styles.consoleWrapper} ref="console">
+                {this.renderConsole()}
+            </div>
+        </div>;
+    }
+
     render() {
         const {active, addCommand} = this.props.store;
         return <div className={styles.main}>
@@ -149,14 +187,7 @@ class Component extends React.Component<Props, any> {
                 {this.renderModeButton()}
                 {this.renderCommandsList()}
             </div>
-            <div className={styles.rightSide} ref="console">
-                <div className={styles.activeCommandMenu}>
-                    {this.renderActiveCommandMenu(active)}
-                </div>
-                <div className={styles.consoleWrapper}>
-                    {this.renderConsole()}
-                </div>
-            </div>
+            {this.renderActiveCommand()}
         </div>;
     }
 }

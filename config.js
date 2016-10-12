@@ -152,5 +152,20 @@ System.config({
         'postcss-nested': {
             main: 'index.js'
         },
+        'ps-tree': {
+            main: 'index.js'
+        },
+        'event-stream': {
+            main: 'index.js'
+        },
+        'map-stream': {
+            main: 'index.js'
+        },
+        'split': {
+            main: 'index.js'
+        },
+        'stream-combiner': {
+            main: 'index.js'
+        }
     }
 });

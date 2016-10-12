@@ -1,5 +1,6 @@
 import { spawn, ChildProcess } from 'child_process';
 import { toJS, observable, computed, action, autorun } from 'mobx';
+import killprocess from 'killprocess';
 
 export enum CommandStreamType { Log, Error, Warning };
 
@@ -9,6 +10,7 @@ interface CommandStream {
 }
 
 interface EditableCommandFields {
+    [index: string]: any;
     id?: number;
     name?: string;
     cwd?: string;
@@ -60,7 +62,7 @@ export class Command implements EditableCommandFields {
         return this.errors.length > 0;
     }
 
-    spawned: ChildProcess;
+    spawned: ChildProcess | null = null;
 
     @action edit(edited: EditableCommandFields) {
 
@@ -81,8 +83,20 @@ export class Command implements EditableCommandFields {
         this.stream.push(stream);
     }
 
-    kill() {
-        this.spawned.kill();
+    @action kill() {
+        if (this.spawned) {
+            killprocess(this.spawned.pid, null, () => {
+                this.spawned = null;
+            });
+        }
+    }
+
+    @computed get isRunning() {
+        return this.spawned !== null;
+    }
+
+    @action clearStream() {
+        this.stream = [];
     }
 
     spawn = () => {
@@ -123,7 +137,7 @@ class Store {
     @observable active: Command;
     @observable commands: Command[] = [];
     @action addCommand = () => {
-        const command = new Command(this.idCounter++);
+        const command = new Command({ id: this.idCounter++ });
         this.commands.push(command);
         return command;
     };
@@ -132,7 +146,6 @@ class Store {
     };
     @action setMode = (mode: CommandsListMode) => {
         this.mode = mode;
-        console.log(this.mode);
     }
 
     /*
@@ -140,7 +153,6 @@ class Store {
     */
     @action
     copyStateFrom(store: Store) {
-        console.log(store.commands);
         this.mode = store.mode;
         this.active = store.active;
         this.commands = store.commands;

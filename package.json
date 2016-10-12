@@ -36,14 +36,17 @@
     "inferno-component": "^0.7.27",
     "inferno-dom": "^0.7.27",
     "jspm-loader-css": "github:mosho1/jspm-loader-css",
+    "killprocess": "0.0.2",
     "mobx": "^2.5.2",
     "mobx-react": "^3.5.6",
     "plugin-typescript": "^5.1.2",
     "postcss-nested": "^1.0.0",
+    "ps-tree": "^1.1.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "systemjs": "^0.19.39",
     "systemjs-plugin-css": "^0.1.30",
-    "systemjs-plugin-json": "^0.2.0"
+    "systemjs-plugin-json": "^0.2.0",
+    "terminate": "^1.0.8"
   }
 }
